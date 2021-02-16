@@ -1,31 +1,36 @@
 import React from 'react';
+
+import {createStore, combineReducers} from 'redux';
+import {Provider} from 'react-redux';
+
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+
 import HomeScreen from './HomeScreen';
 import MapScreen from './MapScreen';
 import ChatScreen from './ChatScreen';
+import pseudo from './reducers/pseudo.reducer'
 import { FontAwesome } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-
-export const generalStyle = {
-  flex: 1,
-  alignItems: 'center',
-  justifyContent: 'center',
-}
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
+const store = createStore(combineReducers({pseudo}))
+
 export default function App() {
   return (
-    <NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
       <Stack.Navigator
         initialRouteName="Home" screenOptions={{headerShown: false}}>
         <Stack.Screen name="Home" component={HomeScreen}/>
         <Stack.Screen name="MapChat" component={MapChatNav}/>
       </Stack.Navigator>
     </NavigationContainer>
+    </Provider>
+    
   );
 }
 
