@@ -37,7 +37,7 @@ function MapScreen(props) {
     const [myLongitude, setMyLongitude] = useState(null)
 
     const [addingPOI, setAddingPOI] = useState(false)
-    const [listPOI, setListPOI] = useState([])
+    //const [listPOI, setListPOI] = useState(props.listFromStore)
 
     const [overlay, setOverlay] = useState({show: false, index: null})
     const [overlayTitle, setOverlayTitle] = useState(null)
@@ -55,36 +55,38 @@ function MapScreen(props) {
         })()
     }, [])
 
-    useEffect(() => {
-        props.handleSaveList(listPOI)
-    }, [listPOI])
+    //useEffect(() => {
+    //    props.handleSaveList(listPOI)
+    //}, [listPOI])
 
 
     const handleAddingPOI = (e) => {
         const {coordinate} = e.nativeEvent;
         if (addingPOI) {
-            setListPOI([...listPOI, {latitude: coordinate.latitude, longitude: coordinate.longitude, title: null, desc: null}])
+            props.handleAddCoord({latitude: coordinate.latitude, longitude: coordinate.longitude, title: null, desc: null})
+            //setListPOI([...listPOI, {latitude: coordinate.latitude, longitude: coordinate.longitude, title: null, desc: null}])
             setAddingPOI(false)
         }
     }
 
     const handleAddingInfo = (e, idx) => {
-        if (!listPOI[idx].title && !listPOI[idx].desc) {
+        if (!props.poiList[idx].title && !props.poiList[idx].desc) {
             setOverlay({show: true, index: idx})
         }
     }
 
     const handleInfoConfirmation = () => {
-        const copyPOI = [...listPOI];
-        copyPOI[overlay.index].title = overlayTitle
-        copyPOI[overlay.index].desc = overlayDesc
-        setListPOI(copyPOI)
+        //const copyPOI = [...listPOI];
+        //copyPOI[overlay.index].title = overlayTitle
+        //copyPOI[overlay.index].desc = overlayDesc
+        //setListPOI(copyPOI)
+        props.handleAddInfo({title: overlayTitle, desc: overlayDesc}, overlay.index)
         setOverlay({show: false, index: null})
         setOverlayDesc(null)
         setOverlayTitle(null)
     }
 
-    const generatePOI = listPOI.map((e,idx) => (
+    const generatePOI = props.poiList.map((e,idx) => (
         <Marker key={idx} coordinate={{latitude: e.latitude, longitude: e.longitude}} pinColor="blue" onPress={el => handleAddingInfo(el, idx)} title={e.title} description={e.desc}/>
     ))
 
@@ -106,15 +108,25 @@ function MapScreen(props) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        handleSaveList: (list) => {
-            dispatch({type: "saveList", list})
+        handleAddCoord: (obj) => {
+            dispatch({
+                type: "addCoord",
+                obj
+            })
+        },
+        handleAddInfo: (obj, index) => {
+            dispatch({
+                type: "addInfo",
+                obj,
+                index
+            })
         }
     }
 }
 
 function mapStateToProps(state) {
     return {
-        listFromStore: state.poiList
+        poiList: state.poiList
     }
 }
 

@@ -23,7 +23,7 @@ function PoiScreen(props) {
         <ScrollView style={{flex: 1}}>
             {
         props.poiList.map((l, i) => (
-        <ListItem key={i} bottomDivider style={styles.ListItem}>
+        <ListItem key={i} bottomDivider style={styles.ListItem} onPress={() => props.handleDeletePoi(i)}>
         <ListItem.Content>
           <ListItem.Title>{l.title}</ListItem.Title>
           <ListItem.Subtitle>{l.desc}</ListItem.Subtitle>
@@ -43,4 +43,15 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps, null)(PoiScreen)
+function mapDispatchToProps(dispatch) {
+    return {
+        handleDeletePoi: (i) => {
+            dispatch({
+                type: "deletePoi",
+                index : i
+            })
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PoiScreen)
