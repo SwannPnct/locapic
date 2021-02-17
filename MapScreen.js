@@ -59,6 +59,7 @@ function MapScreen(props) {
         props.handleSaveList(listPOI)
     }, [listPOI])
 
+
     const handleAddingPOI = (e) => {
         const {coordinate} = e.nativeEvent;
         if (addingPOI) {
@@ -111,4 +112,10 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-export default connect(null, mapDispatchToProps)(MapScreen)
+function mapStateToProps(state) {
+    return {
+        listFromStore: state.poiList
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MapScreen)
