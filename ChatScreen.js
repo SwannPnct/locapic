@@ -1,5 +1,5 @@
 import React from 'react';
-import {View,Text, StyleSheet} from 'react-native';
+import {View,Text, StyleSheet, Dimensions, ScrollView, KeyboardAvoidingView} from 'react-native';
 import {ListItem, Input,Button} from 'react-native-elements';
 import { AntDesign } from '@expo/vector-icons';
 
@@ -24,10 +24,10 @@ const styles = StyleSheet.create({
         width: "100%"
     },
     message: {
-        width: "100%"
+        width: Dimensions.get('window').width
     },
     button: {
-        width: "100%",
+        width: Dimensions.get('window').width,
         backgroundColor: "#FF4545",
         color: "white"
     }
@@ -59,12 +59,14 @@ export default function ChatScreen(props) {
     return (
         <View style={styles.container}>
             <View style={styles.messageContainer}>
-                {generateList}
+                <ScrollView style={{flex:1}}>
+                    {generateList}
+                </ScrollView>
             </View>
-            <View style={styles.inputContainer}>
+            <KeyboardAvoidingView style={styles.inputContainer} behavior="padding" enabled>
                 <Input placeholder="Your message"></Input>
                 <Button buttonStyle={styles.button} icon={<AntDesign name="mail" size={24} color="white" />} title=" Send"></Button>
-            </View>
+            </KeyboardAvoidingView>
         </View>
     )
 }

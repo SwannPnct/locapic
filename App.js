@@ -10,14 +10,18 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import HomeScreen from './HomeScreen';
 import MapScreen from './MapScreen';
 import ChatScreen from './ChatScreen';
+import PoiScreen from './PoiScreen';
+
 import pseudo from './reducers/pseudo.reducer'
+import poiList from './reducers/poi.reducer'
+
 import { FontAwesome } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const store = createStore(combineReducers({pseudo}))
+const store = createStore(combineReducers({pseudo, poiList}))
 
 export default function App() {
   return (
@@ -41,6 +45,11 @@ function MapChatNav() {
       <Tab.Screen name="Map" component={MapScreen} options={{
         tabBarIcon: ({color,size}) => (
           <FontAwesome name="location-arrow" size={size} color={color} />
+        )
+      }}/>
+      <Tab.Screen name="All POI" component={PoiScreen} options={{
+        tabBarIcon: ({color,size}) => (
+          <FontAwesome name="list-ul" size={size} color={color} />
         )
       }}/>
       <Tab.Screen name="Chat" component={ChatScreen} options={{
