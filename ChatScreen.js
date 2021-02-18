@@ -3,6 +3,8 @@ import {View,Text, StyleSheet, Dimensions, ScrollView, KeyboardAvoidingView} fro
 import {ListItem, Input,Button} from 'react-native-elements';
 import { AntDesign } from '@expo/vector-icons';
 
+import {connect} from 'react-redux';
+
 import socketIOClient from 'socket.io-client';
 const socket = socketIOClient('http://192.168.1.54:3000')
 
@@ -36,9 +38,9 @@ const styles = StyleSheet.create({
     }
 })
 
-export default function ChatScreen(props) {
+function ChatScreen(props) {
 
-    const [currentMessage, setCurrentMessage] = useState("");
+    const [currentMessage, setCurrentMessage] = useState(null);
     const [listMessage, setListMessage] = useState([]);
 
    //const listData = [
@@ -55,15 +57,18 @@ export default function ChatScreen(props) {
    },[])
 
     const handleSendMessage = () => {
-        socket.emit("sendMessage", currentMessage)
+        if (currentMessage) {
+            socket.emit("sendMessage", currentMessage)
+            setCurrentMessage(null)
+        }
     }
-
+    //<ListItem.Subtitle>{e.name}</ListItem.Subtitle>
     const generateList = listMessage.map((e,idx) => 
     (
         <ListItem key={idx} bottomDivider style={styles.message}>
         <ListItem.Content>
-          <ListItem.Title>{e.message}</ListItem.Title>
-          //<ListItem.Subtitle>{e.name}</ListItem.Subtitle>
+          <ListItem.Title>{e}</ListItem.Title>
+          
         </ListItem.Content>
       </ListItem>
     )   )
@@ -72,7 +77,7 @@ export default function ChatScreen(props) {
         <View style={styles.container}>
             <View style={styles.messageContainer}>
                 <ScrollView style={{flex:1}}>
-                    {generateList.length > 0 ? generateList : "No messages"}
+                    {generateList.length > 0 ? generateList : <Text>"No messages"</Text>}
                 </ScrollView>
             </View>
             <KeyboardAvoidingView style={styles.inputContainer} behavior="padding" enabled>
@@ -82,3 +87,11 @@ export default function ChatScreen(props) {
         </View>
     )
 }
+
+function mapStateToProps(state) {
+    return {
+        pseudo: state.pseudo
+    }
+}
+
+export default (mapStateToProps, null)(ChatScreen)
