@@ -6,7 +6,8 @@ import { AntDesign } from '@expo/vector-icons';
 import {connect} from 'react-redux';
 
 import socketIOClient from 'socket.io-client';
-const socket = socketIOClient('http://192.168.1.54:3000')
+const socket = socketIOClient('http://192.168.1.54:3000');
+
 
 const styles = StyleSheet.create({
     container: {
@@ -20,7 +21,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: "flex-start",
-        width: "100%"
+        width: "100%",
     },
     inputContainer: {
         flex: 1,
@@ -42,23 +43,16 @@ function ChatScreen(props) {
 
     const [currentMessage, setCurrentMessage] = useState(null);
     const [listMessage, setListMessage] = useState([]);
-
    
     useEffect(() => {
+        
         socket.on("sendMessageToAll", (obj) => {
+            const emojis = [{regex: /:\)/gi, unicode: "\u263A"},{regex: /:\(/gi, unicode: "\u2639"},{regex: /:p/gi, unicode: "\uD83D\uDE1B"}]
+            emojis.forEach((e) => obj.message = obj.message.replace(e.regex,e.unicode))
             setListMessage([...listMessage, obj])
         })
-    }, [])
-    useEffect(() => {
-        socket.on("sendMessageToAll", (obj) => {
-            setListMessage([...listMessage, obj])
-        })
-    }, [currentMessage])
-
-    console.log(listMessage);
+    } ,[listMessage])
     
-  
-
     const handleSendMessage = () => {
         if (currentMessage) {
             socket.emit("sendMessage", {pseudo: props.pseudo, message: currentMessage})
