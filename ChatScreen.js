@@ -43,32 +43,35 @@ function ChatScreen(props) {
     const [currentMessage, setCurrentMessage] = useState(null);
     const [listMessage, setListMessage] = useState([]);
 
-   //const listData = [
-   //     {
-   //         name: "Alex",
-   //         message : "Parfait et toi?"
-   //     }
-   // ]
+   
+    useEffect(() => {
+        socket.on("sendMessageToAll", (obj) => {
+            setListMessage([...listMessage, obj])
+        })
+    }, [])
+    useEffect(() => {
+        socket.on("sendMessageToAll", (obj) => {
+            setListMessage([...listMessage, obj])
+        })
+    }, [currentMessage])
 
-   useEffect(() => {
-       socket.on("sendMessageToAll", (msg) => {
-           setListMessage([...listMessage, msg])
-       })
-   },[])
+    console.log(listMessage);
+    
+  
 
     const handleSendMessage = () => {
         if (currentMessage) {
-            socket.emit("sendMessage", currentMessage)
+            socket.emit("sendMessage", {pseudo: props.pseudo, message: currentMessage})
             setCurrentMessage(null)
         }
     }
-    //<ListItem.Subtitle>{e.name}</ListItem.Subtitle>
+    
     const generateList = listMessage.map((e,idx) => 
     (
         <ListItem key={idx} bottomDivider style={styles.message}>
         <ListItem.Content>
-          <ListItem.Title>{e}</ListItem.Title>
-          
+          <ListItem.Title>{e.message}</ListItem.Title>
+          <ListItem.Subtitle>{e.pseudo}</ListItem.Subtitle>
         </ListItem.Content>
       </ListItem>
     )   )
@@ -94,4 +97,4 @@ function mapStateToProps(state) {
     }
 }
 
-export default (mapStateToProps, null)(ChatScreen)
+export default connect(mapStateToProps, null)(ChatScreen)

@@ -32,14 +32,21 @@ const styles = StyleSheet.create({
 
 function HomeScreen(props) {
 
-    const [pseudo, setPseudo] = useState("");
+    const [pseudo, setPseudo] = useState(null);
+
+    const handleGo = () => {
+        if(pseudo) {
+            props.handleSavePseudo(pseudo); 
+            props.navigation.navigate("MapChat")
+        }
+    }
 
     return (
         <View style={styles.container}>
             <ImageBackground style={styles.backgroundImage} source={require('./assets/home.jpg')}>
                 <View style={styles.input}>
                     <Input placeholder="Name" leftIcon={<FontAwesome name="user" size={24} color="red" />} onChangeText={(value) => setPseudo(value)} value={pseudo}></Input>
-                    <Button icon={<FontAwesome name="arrow-right" size={20} color="red" />} title=" Go to Map" buttonStyle={styles.button}  onPress={() => {props.handleSavePseudo(pseudo); props.navigation.navigate("MapChat")}}/>
+                    <Button icon={<FontAwesome name="arrow-right" size={20} color="red" />} title=" Go to Map" buttonStyle={styles.button}  onPress={() => handleGo()}/>
                 </View>
             </ImageBackground>
             
