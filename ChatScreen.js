@@ -55,7 +55,9 @@ function ChatScreen(props) {
     
     const handleSendMessage = () => {
         if (currentMessage) {
-            socket.emit("sendMessage", {pseudo: props.pseudo, message: currentMessage})
+            const checkProfanity = /[a-z]*fuck[a-z]*/gi;
+            const filteredMessage = currentMessage.replace(checkProfanity, "***")
+            socket.emit("sendMessage", {pseudo: props.pseudo, message: filteredMessage})
             setCurrentMessage(null)
         }
     }
