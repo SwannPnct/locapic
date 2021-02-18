@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {View,Text, StyleSheet, Dimensions, ScrollView, KeyboardAvoidingView} from 'react-native';
 import {ListItem, Input,Button} from 'react-native-elements';
 import { AntDesign } from '@expo/vector-icons';
 
 import socketIOClient from 'socket.io-client';
-const socket = socketIOClient('http://localhost:3000')
+const socket = socketIOClient('http://192.168.1.54:3000')
 
 const styles = StyleSheet.create({
     container: {
@@ -38,23 +38,32 @@ const styles = StyleSheet.create({
 
 export default function ChatScreen(props) {
 
-    const listData = [
-        {
-            name: "Alex",
-            message : "Parfait et toi?"
-        },
-        {
-            name: "Johnny",
-            message : "Allumez le feu"
-        }
-    ]
+    const [currentMessage, setCurrentMessage] = useState("");
+    const [listMessage, setListMessage] = useState([]);
 
-    const generateList = listData.map((e,idx) => 
+   //const listData = [
+   //     {
+   //         name: "Alex",
+   //         message : "Parfait et toi?"
+   //     }
+   // ]
+
+   useEffect(() => {
+       socket.on("sendMessageToAll", (msg) => {
+           setListMessage([...listMessage, msg])
+       })
+   },[])
+
+    const handleSendMessage = () => {
+        socket.emit("sendMessage", currentMessage)
+    }
+
+    const generateList = listMessage.map((e,idx) => 
     (
         <ListItem key={idx} bottomDivider style={styles.message}>
         <ListItem.Content>
           <ListItem.Title>{e.message}</ListItem.Title>
-          <ListItem.Subtitle>{e.name}</ListItem.Subtitle>
+          //<ListItem.Subtitle>{e.name}</ListItem.Subtitle>
         </ListItem.Content>
       </ListItem>
     )   )
@@ -63,12 +72,12 @@ export default function ChatScreen(props) {
         <View style={styles.container}>
             <View style={styles.messageContainer}>
                 <ScrollView style={{flex:1}}>
-                    {generateList}
+                    {generateList.length > 0 ? generateList : "No messages"}
                 </ScrollView>
             </View>
             <KeyboardAvoidingView style={styles.inputContainer} behavior="padding" enabled>
-                <Input placeholder="Your message"></Input>
-                <Button buttonStyle={styles.button} icon={<AntDesign name="mail" size={24} color="white" />} title=" Send"></Button>
+                <Input placeholder="Your message" onChangeText={(e) => setCurrentMessage(e)} value={currentMessage}></Input>
+                <Button buttonStyle={styles.button} icon={<AntDesign name="mail" size={24} color="white" />} title=" Send" onPress={() => handleSendMessage()}></Button>
             </KeyboardAvoidingView>
         </View>
     )
