@@ -3,6 +3,9 @@ import {View,Text, StyleSheet, Dimensions, ScrollView, KeyboardAvoidingView} fro
 import {ListItem, Input,Button} from 'react-native-elements';
 import { AntDesign } from '@expo/vector-icons';
 
+import socketIOClient from 'socket.io-client';
+const socket = socketIOClient('http://localhost:3000')
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
