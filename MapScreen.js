@@ -55,16 +55,11 @@ function MapScreen(props) {
         })()
     }, [])
 
-    //useEffect(() => {
-    //    props.handleSaveList(listPOI)
-    //}, [listPOI])
-
 
     const handleAddingPOI = (e) => {
         const {coordinate} = e.nativeEvent;
         if (addingPOI) {
             props.handleAddCoord({latitude: coordinate.latitude, longitude: coordinate.longitude, title: null, desc: null})
-            //setListPOI([...listPOI, {latitude: coordinate.latitude, longitude: coordinate.longitude, title: null, desc: null}])
             setAddingPOI(false)
         }
     }
@@ -76,10 +71,6 @@ function MapScreen(props) {
     }
 
     const handleInfoConfirmation = () => {
-        //const copyPOI = [...listPOI];
-        //copyPOI[overlay.index].title = overlayTitle
-        //copyPOI[overlay.index].desc = overlayDesc
-        //setListPOI(copyPOI)
         props.handleAddInfo({title: overlayTitle, desc: overlayDesc}, overlay.index)
         setOverlay({show: false, index: null})
         setOverlayDesc(null)
