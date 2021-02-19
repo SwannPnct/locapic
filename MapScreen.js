@@ -43,6 +43,8 @@ function MapScreen(props) {
     const [overlayTitle, setOverlayTitle] = useState(null)
     const [overlayDesc, setOverlayDesc] = useState(null)
 
+    const [initialLoad, setInitialLoad] = useState(false)
+
     useEffect(() => {
         (async () => {
             const {status} = await Location.requestPermissionsAsync();
@@ -59,17 +61,21 @@ function MapScreen(props) {
             } else {
                 if (data) {
                     props.handleLoadFull(JSON.parse(data))
+                    setInitialLoad(true)
                 }
             }
         })
     }, [])
 
     useEffect(() => {
-        AsyncStorage.setItem("poi", JSON.stringify(props.poiList))
+        if (!initialLoad) {
+            AsyncStorage.setItem("poi", JSON.stringify(props.poiList))
+        } 
     }, [props.poiList])
 
 
     const handleAddingPOI = (e) => {
+        setInitialLoad(false)
         const {coordinate} = e.nativeEvent;
         if (addingPOI) {
             props.handleAddCoord({latitude: coordinate.latitude, longitude: coordinate.longitude, title: null, desc: null})
