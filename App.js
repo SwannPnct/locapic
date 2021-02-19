@@ -9,6 +9,9 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
+import socketIOClient from 'socket.io-client';
+export const socket = socketIOClient('http://192.168.1.54:3000');
+
 import HomeScreen from './HomeScreen';
 import MapScreen from './MapScreen';
 import ChatScreen from './ChatScreen';

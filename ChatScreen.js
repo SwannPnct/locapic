@@ -5,8 +5,7 @@ import { AntDesign } from '@expo/vector-icons';
 
 import {connect} from 'react-redux';
 
-import socketIOClient from 'socket.io-client';
-const socket = socketIOClient('http://192.168.1.54:3000');
+import {socket} from './App'
 
 
 const styles = StyleSheet.create({

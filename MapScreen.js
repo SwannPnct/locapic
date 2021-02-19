@@ -6,6 +6,8 @@ import * as Location from 'expo-location'
 import {connect} from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
+import {socket} from './App'
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -45,13 +47,20 @@ function MapScreen(props) {
 
     const [initialLoad, setInitialLoad] = useState(false)
 
+    const [otherUserLocation, setOtherUserLocation] = useState([])
+
     useEffect(() => {
         (async () => {
             const {status} = await Location.requestPermissionsAsync();
             if (status === "granted") {
                 await Location.watchPositionAsync({distanceInterval: 2}, (location) => {
-                    setMyLatitude(location.coords.latitude);
-                    setMyLongitude(location.coords.longitude);
+
+                    const {latitude, longitude} = location.coords
+
+                    socket.emit("sendLocation", {pseudo: props.pseudo, latitude, longitude})
+
+                    setMyLatitude(latitude);
+                    setMyLongitude(longitude);
                 })
             }
         })()
@@ -72,6 +81,14 @@ function MapScreen(props) {
             AsyncStorage.setItem("poi", JSON.stringify(props.poiList))
         } 
     }, [props.poiList])
+
+    useEffect(() => {
+        socket.on("sendLocationToAll", (obj) => {
+            if (obj) {
+                setOtherUserLocation(...otherUserLocation, obj)
+            }
+        })
+    }, [otherUserLocation])
 
 
     const handleAddingPOI = (e) => {
@@ -100,11 +117,16 @@ function MapScreen(props) {
         <Marker key={idx} coordinate={{latitude: e.latitude, longitude: e.longitude}} pinColor="blue" onPress={el => handleAddingInfo(el, idx)} title={e.title} description={e.desc}/>
     ))
 
+    const generateOtherUsersLocation = !otherUserLocation.length>0 ? null : otherUserLocation.map((e,idx) => (
+        <Marker key={idx} coordinate={{latitude: e.latitude, longitude: e.longitude}} pinColor="green" title={e.pseudo}/>
+    ))
+
     return (
         <View style={styles.container}>
             <MapView onPress={e => handleAddingPOI(e)} style={styles.map} initialRegion={{latitude: 47.218371, longitude: -1.553621, latitudeDelta:5, longitudeDelta: 5}}>
                 {myLatitude && myLongitude ? <Marker coordinate={{latitude: myLatitude, longitude: myLongitude}} title="Hello" description="I am here" pinColor="red"/> : null}
                 {generatePOI}
+                {generateOtherUsersLocation}
             </MapView>
             <Overlay isVisible={overlay.show} onBackdropPress={() => setOverlay({show: false, index: null})} overlayStyle={styles.overlay}>
                 <Input placeholder="Titre" onChangeText={e => setOverlayTitle(e)} value={overlayTitle}/>
@@ -142,7 +164,8 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
     return {
-        poiList: state.poiList
+        poiList: state.poiList,
+        pseudo: state.pseudo
     }
 }
 
