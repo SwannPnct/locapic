@@ -10,7 +10,10 @@ export default function f(poiList = [], action) {
         const copy = [...poiList];
         copy.splice(action.index,1);
         return copy
-    } else {
+    } else if(action.type === "loadFull"){
+        return action.array
+    }
+    else {
         return poiList
     }
 }

@@ -4,6 +4,7 @@ import {Button, Overlay, Input} from 'react-native-elements'
 import MapView, {Marker} from 'react-native-maps'
 import * as Location from 'expo-location'
 import {connect} from 'react-redux'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const styles = StyleSheet.create({
     container: {
@@ -37,7 +38,6 @@ function MapScreen(props) {
     const [myLongitude, setMyLongitude] = useState(null)
 
     const [addingPOI, setAddingPOI] = useState(false)
-    //const [listPOI, setListPOI] = useState(props.listFromStore)
 
     const [overlay, setOverlay] = useState({show: false, index: null})
     const [overlayTitle, setOverlayTitle] = useState(null)
@@ -53,7 +53,20 @@ function MapScreen(props) {
                 })
             }
         })()
+        AsyncStorage.getItem("poi", (err, data) => {
+            if(err){
+                console.log(err);
+            } else {
+                if (data) {
+                    props.handleLoadFull(JSON.parse(data))
+                }
+            }
+        })
     }, [])
+
+    useEffect(() => {
+        AsyncStorage.setItem("poi", JSON.stringify(props.poiList))
+    }, [props.poiList])
 
 
     const handleAddingPOI = (e) => {
@@ -110,6 +123,12 @@ function mapDispatchToProps(dispatch) {
                 type: "addInfo",
                 obj,
                 index
+            })
+        },
+        handleLoadFull: (array) => {
+            dispatch({
+                type: "loadFull",
+                array
             })
         }
     }

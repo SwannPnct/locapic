@@ -2,6 +2,7 @@ import React from 'react'
 import {View, StyleSheet, Dimensions, ScrollView} from 'react-native'
 import {ListItem} from 'react-native-elements'
 import {connect} from 'react-redux'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const styles = StyleSheet.create({
     container: {
